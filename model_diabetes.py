@@ -2,50 +2,50 @@ import numpy as np
 import joblib
 import streamlit as st
 
+# Carregar modelo
 model = joblib.load("model.pkl")
 
 def diabetes_prediction(input_data):
+    input_data = np.asarray(input_data).reshape(1, -1)
+    prediction = model.predict(input_data)
 
-    input_data_as_numpy_array = np.asarray(input_data)
-
-    input_data_reshaped = input_data_as_numpy_array.reshape(1, -1)
-
-    prediction = model.predict(input_data_reshaped)
-    print(prediction)
-
-    if (prediction[0] == 0):
-        return 'The person is not diabetic'
+    if prediction[0] == 0:
+        return 'A pessoa não é diabética'
     else:
-        return 'The person is diabetic'
+        return 'A pessoa é diabética'
 
 def main():
-    st.title("Diabetes Prediction")
-    Pregnancies = st.text_input('Number of Pregnancies')
-    Glucose = st.text_input('Glucose Level')
-    BloodPressure = st.text_input('Blood Pressure value')
-    SkinThickness = st.text_input('Skin Thickness value')
-    Insulin = st.text_input('Insulin Level')
-    BMI = st.text_input('BMI value')
-    DiabetesPedigreeFunction = st.text_input('Diabetes Pedigree Function value')
-    Age = st.text_input('Age of the Person')
+    st.title("🩺 Predição de Diabetes")
 
-    diagnosis = ''
+    st.subheader("Insira os dados do paciente:")
 
-    if st.button('Diabetes Test Result'):
-        try:
-            diagnosis = diabetes_prediction([
-                float(Pregnancies),
-                float(Glucose),
-                float(BloodPressure),
-                float(SkinThickness),
-                float(Insulin),
-                float(BMI),
-                float(DiabetesPedigreeFunction),
-                float(Age)
-            ])
-            st.success(diagnosis)
-        except:
-            st.error("Please fill all fields with valid numbers")
+    gravidezes = st.number_input('Número de gestações', min_value=0, max_value=20, step=1)
+    glicose = st.number_input('Glicose (mg/dL)', min_value=0, max_value=200)
+    pressao = st.number_input('Pressão arterial (mmHg)', min_value=0, max_value=140)
+    espessura_pele = st.number_input('Espessura da pele (mm)', min_value=0, max_value=100)
+    insulina = st.number_input('Insulina (µU/mL)', min_value=0, max_value=900)
+    imc = st.number_input('IMC (kg/m²)', min_value=0.0, max_value=70.0)
+    historico = st.number_input('Histórico familiar (Diabetes Pedigree Function)', min_value=0.0, max_value=3.0)
+    idade = st.number_input('Idade', min_value=1, max_value=120)
+
+    if st.button('🔍 Resultado'):
+        dados = [
+            gravidezes,
+            glicose,
+            pressao,
+            espessura_pele,
+            insulina,
+            imc,
+            historico,
+            idade
+        ]
+
+        resultado = diabetes_prediction(dados)
+
+        if "não" in resultado:
+            st.success(resultado)
+        else:
+            st.error(resultado)
 
 if __name__ == '__main__':
     main()
